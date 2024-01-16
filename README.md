@@ -1,1 +1,2 @@
-# meme-match
+npm install
+npm run dev
