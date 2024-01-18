@@ -1,7 +1,7 @@
 import { Box, Container, Flex, Spinner } from "@chakra-ui/react";
-import MatchForm from "../features/match-form/MatchForm";
-import Login from "../features/login/Login.jsx";
-import useAuth from "../hooks/useAuth.js";
+import MatchForm from "/src/features/match-form/MatchForm";
+import Login from "/src/features/login/Login.jsx";
+import useAuth from "/src/hooks/useAuth.js";
 
 const Main = () => {
   const { user, logIn, isLoading } = useAuth();

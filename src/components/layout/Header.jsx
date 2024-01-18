@@ -1,5 +1,5 @@
 import { Box, Button, Heading, Flex } from "@chakra-ui/react";
-import useAuth from "../hooks/useAuth.js";
+import useAuth from "/src/hooks/useAuth.js";
 
 const Header = () => {
   const { logOut, user } = useAuth();
