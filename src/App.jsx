@@ -10,12 +10,6 @@ function App() {
     <Flex
       direction="column"
       flex="1"
-      // bgImage="url('/src/assets/background.png')"
-      // bgPosition="center"
-      // bgRepeat="no-repeat"
-      // bgSize="cover"
-      // width="full"
-      // height="400px"
     >
       <Header />
       <Main />
