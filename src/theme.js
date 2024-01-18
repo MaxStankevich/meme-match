@@ -7,6 +7,11 @@ const theme = {
         colorScheme: "teal",
       },
     },
+    Spinner: {
+      defaultProps: {
+        color: "blue.500"
+      }
+    }
   },
 };
 

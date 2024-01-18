@@ -8,12 +8,14 @@ const checkLoggedInUser = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loggedInUser = checkLoggedInUser();
     if (loggedInUser) {
       setUser(loggedInUser);
     }
+    setIsLoading(false);
   }, []);
 
   const logIn = (userData) => {
@@ -27,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, logIn, logOut }}>
+    <AuthContext.Provider value={{ user, logIn, logOut, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
