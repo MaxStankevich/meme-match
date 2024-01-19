@@ -1,1 +1,2 @@
-export const BASE_URL = process.env.NODE_ENV === "production" ? "/meme-match/" : "/";
+export const BASE_URL =
+  process.env.NODE_ENV === "production" ? "/meme-match/" : "/";
