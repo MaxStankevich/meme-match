@@ -7,7 +7,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
-// import { Logo } from './Logo'
 
 const Footer = () => (
   <Box role="presentation" py="3" px="4" bg="teal.100">

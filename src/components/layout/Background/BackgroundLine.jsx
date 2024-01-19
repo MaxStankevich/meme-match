@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@chakra-ui/react';
-import './BackgroundLine.css'; // Path to your CSS file
+import './BackgroundLine.css';
 
 const BackgroundLine = ({ direction, speed }) => {
   return (

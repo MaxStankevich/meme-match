@@ -1,7 +1,7 @@
 .background-line {
   opacity: 0.1;
   width: 100%;
-  height: 50px; /* Height of each line */
+  height: 70px;
   background-image: url("src/assets/trollface.png");
   background-repeat: repeat-x;
   background-size: contain;
@@ -18,7 +18,6 @@
   animation-name: moveLeft;
 }
 
-/* Add space between lines */
 .background-line + .background-line {
-  margin-top: 10px; /* Spacing between lines */
+  margin-top: 10px;
 }
