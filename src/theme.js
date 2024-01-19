@@ -7,10 +7,12 @@ const theme = {
         colorScheme: "teal",
       },
     },
-    Spinner: {
-      defaultProps: {
-        color: "blue.500"
-      }
+    Link: {
+      baseStyle: {
+        _hover: {
+          textDecoration: 'none',
+        },
+      },
     }
   },
 };

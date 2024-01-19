@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Checkbox,
   Container,
@@ -15,12 +14,10 @@ import {
 } from "@chakra-ui/react";
 import { OAuthButtonGroup } from "./OAuthButtonGroup";
 import { PasswordField } from "./PasswordField";
+import BoxWithShadow from "../../components/BoxWithShadow.jsx";
 
 const Login = ({ onLogin }) => (
-  <Container
-    maxW="lg"
-    px={{ base: "0", sm: "8" }}
-  >
+  <Container maxW="lg" px={{ base: "0", sm: "8" }}>
     <Stack spacing="8">
       <Stack spacing="6">
         <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
@@ -28,17 +25,19 @@ const Login = ({ onLogin }) => (
             Log in to your account
           </Heading>
           <Text color="fg.muted">
-            Don't have an account? <Link href="#">Sign up</Link>
+            Don't have an account?{" "}
+            <Link
+              href="#"
+              _hover={{
+                textDecoration: "underline",
+              }}
+            >
+              Sign up
+            </Link>
           </Text>
         </Stack>
       </Stack>
-      <Box
-        py={{ base: "0", sm: "8" }}
-        px={{ base: "4", sm: "10" }}
-        bg={{ base: "transparent", sm: "bg.surface" }}
-        boxShadow={{ base: "none", sm: "md" }}
-        borderRadius={{ base: "none", sm: "xl" }}
-      >
+      <BoxWithShadow>
         <Stack spacing="6">
           <Stack spacing="5">
             <FormControl>
@@ -54,7 +53,9 @@ const Login = ({ onLogin }) => (
             </Button>
           </HStack>
           <Stack spacing="6">
-            <Button onClick={() => onLogin({ id: 1, name: "John" })}>Sign in</Button>
+            <Button onClick={() => onLogin({ id: 1, name: "John" })}>
+              Sign in
+            </Button>
             <HStack>
               <Divider />
               <Text textStyle="sm" whiteSpace="nowrap" color="fg.muted">
@@ -65,7 +66,7 @@ const Login = ({ onLogin }) => (
             <OAuthButtonGroup />
           </Stack>
         </Stack>
-      </Box>
+      </BoxWithShadow>
     </Stack>
   </Container>
 );

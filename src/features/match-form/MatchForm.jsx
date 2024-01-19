@@ -13,6 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import BoxWithShadow from "../../components/BoxWithShadow.jsx";
 
 const MyForm = () => {
   const {
@@ -45,47 +46,54 @@ const MyForm = () => {
   };
 
   return (
-    <VStack as="form" onSubmit={handleSubmit(onSubmit)} spacing={4}>
-      <FormControl isInvalid={errors.apiUrl}>
-        <FormLabel htmlFor="apiUrl">API Url</FormLabel>
-        <Input
-          id="apiUrl"
-          {...register("apiUrl", { required: "API Url is required" })}
-        />
-        <FormErrorMessage>
-          {errors.apiUrl && errors.apiUrl.message}
-        </FormErrorMessage>
-      </FormControl>
+    <BoxWithShadow>
+      <VStack as="form" onSubmit={handleSubmit(onSubmit)} spacing={4}>
+        <FormControl isInvalid={errors.apiUrl}>
+          <FormLabel htmlFor="apiUrl">API Url</FormLabel>
+          <Input
+            id="apiUrl"
+            {...register("apiUrl", { required: "API Url is required" })}
+          />
+          <FormErrorMessage>
+            {errors.apiUrl && errors.apiUrl.message}
+          </FormErrorMessage>
+        </FormControl>
 
-      <FormControl isInvalid={errors.text}>
-        <FormLabel htmlFor="text">Text</FormLabel>
-        <Textarea
-          id="text"
-          {...register("text", { required: "Text is required" })}
-        />
-        <FormErrorMessage>
-          {errors.text && errors.text.message}
-        </FormErrorMessage>
-      </FormControl>
+        <FormControl isInvalid={errors.text}>
+          <FormLabel htmlFor="text">Text</FormLabel>
+          <Textarea
+            id="text"
+            {...register("text", { required: "Text is required" })}
+          />
+          <FormErrorMessage>
+            {errors.text && errors.text.message}
+          </FormErrorMessage>
+        </FormControl>
 
-      <FormControl>
-        <FormLabel htmlFor="count">Max Memes Count</FormLabel>
-        <NumberInput defaultValue={0}>
-          <NumberInputField id="count" {...register("count")} />
-        </NumberInput>
-      </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="count">Max Memes Count</FormLabel>
+          <NumberInput defaultValue={0}>
+            <NumberInputField id="count" {...register("count")} />
+          </NumberInput>
+        </FormControl>
 
-      <Button mt={4} colorScheme="teal" isLoading={isSubmitting} type="submit">
-        Submit
-      </Button>
+        <Button
+          mt={4}
+          colorScheme="teal"
+          isLoading={isSubmitting}
+          type="submit"
+        >
+          Submit
+        </Button>
 
-      {responseText && (
-        <Box mt={4}>
-          <Text>Response:</Text>
-          <Text>{responseText}</Text>
-        </Box>
-      )}
-    </VStack>
+        {responseText && (
+          <Box mt={4}>
+            <Text>Response:</Text>
+            <Text>{responseText}</Text>
+          </Box>
+        )}
+      </VStack>
+    </BoxWithShadow>
   );
 };
 

@@ -1,4 +1,11 @@
-import { Box, Button, Heading, Flex } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Flex,
+  Link as ChakraLink,
+} from "@chakra-ui/react";
+import { Link as ReactRouterLink } from "react-router-dom";
 import useAuth from "/src/hooks/useAuth.js";
 
 const Header = () => {
@@ -7,7 +14,12 @@ const Header = () => {
   return (
     <Box as="nav" role="navigation" bg="teal.400">
       <Flex justifyContent="space-between" color="white" p="15px">
-        <Heading>MemeMatch</Heading>
+        <ChakraLink as={ReactRouterLink} to="/">
+          <Flex>
+            <Heading>M</Heading>
+            <Heading color="black">M</Heading>
+          </Flex>
+        </ChakraLink>
         {user && <Button onClick={logOut}>Log Out</Button>}
       </Flex>
     </Box>
