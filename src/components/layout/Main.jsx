@@ -3,9 +3,11 @@ import MatchForm from "/src/features/match-form/MatchForm";
 import Login from "/src/features/login/Login.jsx";
 import useAuth from "/src/hooks/useAuth.js";
 import Background from "./Background/index.jsx";
+import { Routes, Route } from "react-router-dom";
+import Admin from "../../features/admin/Admin.jsx";
 
 const Main = () => {
-  const { user, logIn, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
   return (
     <Background>
@@ -28,7 +30,16 @@ const Main = () => {
                 />
               </Flex>
             ) : (
-              <>{user ? <MatchForm /> : <Login onLogin={logIn} />}</>
+              <>
+                {user ? (
+                  <Routes>
+                    <Route path="/" element={<MatchForm />} />
+                    <Route path="/admin" element={<Admin />} />
+                  </Routes>
+                ) : (
+                  <Login />
+                )}
+              </>
             )}
           </Box>
         </Container>

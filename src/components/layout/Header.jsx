@@ -1,15 +1,21 @@
 import {
   Box,
-  Button,
   Heading,
   Flex,
   Link as ChakraLink,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { FaUserCircle, FaTools, FaSignOutAlt } from "react-icons/fa";
 import useAuth from "/src/hooks/useAuth.js";
 
 const Header = () => {
   const { logOut, user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <Box as="nav" role="navigation" bg="teal.400">
@@ -20,7 +26,32 @@ const Header = () => {
             <Heading color="black">M</Heading>
           </Flex>
         </ChakraLink>
-        {user && <Button onClick={logOut}>Log Out</Button>}
+        {user && (
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              icon={<FaUserCircle />}
+              variant="outline"
+              colorScheme="white"
+              borderRadius="full"
+            />
+            <MenuList color="black">
+              {user.role === "admin" && (
+                <MenuItem
+                  icon={<FaTools />}
+                  onClick={() => {
+                    navigate("/admin");
+                  }}
+                >
+                  Administration
+                </MenuItem>
+              )}
+              <MenuItem icon={<FaSignOutAlt />} onClick={logOut}>
+                Log Out
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        )}
       </Flex>
     </Box>
   );
