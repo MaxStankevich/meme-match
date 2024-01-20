@@ -96,8 +96,8 @@ const MyForm = () => {
                   <Image
                     key={id}
                     boxSize="150px"
-                    src={`localhost:5000/memes/${id}`}
-                    alt="Dan Abramov"
+                    src={`http://localhost:5000/memes/${id}`}
+                    alt={id}
                   />
                 );
               })}
