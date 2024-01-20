@@ -8,9 +8,10 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  Image,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
-import { FaUserCircle, FaTools, FaSignOutAlt } from "react-icons/fa";
+import { FaTools, FaSignOutAlt } from "react-icons/fa";
 import useAuth from "/src/hooks/useAuth.js";
 
 const Header = () => {
@@ -30,11 +31,18 @@ const Header = () => {
           <Menu>
             <MenuButton
               as={IconButton}
-              icon={<FaUserCircle />}
               variant="outline"
               colorScheme="white"
               borderRadius="full"
-            />
+              p={0}
+            >
+              <Image
+                src="src/assets/face.png"
+                alt="User"
+                borderRadius="full"
+                boxSize="40px"
+              />
+            </MenuButton>
             <MenuList color="black">
               {user.role === "admin" && (
                 <MenuItem

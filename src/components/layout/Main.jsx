@@ -34,7 +34,9 @@ const Main = () => {
                 {user ? (
                   <Routes>
                     <Route path="/" element={<MatchForm />} />
-                    <Route path="/admin" element={<Admin />} />
+                    {user.role === "admin" && (
+                      <Route path="/admin" element={<Admin />} />
+                    )}
                   </Routes>
                 ) : (
                   <Login />
