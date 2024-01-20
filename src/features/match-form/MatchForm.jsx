@@ -11,8 +11,9 @@ import {
   VStack,
   Box,
   Text,
-  Stack,
   Image,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import BoxWithShadow from "../../components/BoxWithShadow.jsx";
@@ -90,18 +91,18 @@ const MyForm = () => {
 
         {response?.memes ? (
           <Box mt={4}>
-            <Stack direction="row">
-              {response.memes.map((id) => {
-                return (
+            <Wrap spacing="20px">
+              {response?.memes?.map((id) => (
+                <WrapItem key={id}>
                   <Image
                     key={id}
                     boxSize="150px"
                     src={`http://localhost:5000/memes/${id}`}
                     alt={id}
                   />
-                );
-              })}
-            </Stack>
+                </WrapItem>
+              ))}
+            </Wrap>
           </Box>
         ) : (
           <Text>{response}</Text>
