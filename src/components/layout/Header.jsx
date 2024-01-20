@@ -12,7 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import { FaTools, FaSignOutAlt } from "react-icons/fa";
-import useAuth from "/src/hooks/useAuth.js";
+import useAuth from "src/hooks/useAuth.js";
+import faceImage from "src/assets/face.png";
 
 const Header = () => {
   const { logOut, user } = useAuth();
@@ -37,7 +38,7 @@ const Header = () => {
               p={0}
             >
               <Image
-                src="src/assets/face.png"
+                src={faceImage}
                 alt="User"
                 borderRadius="full"
                 boxSize="40px"
