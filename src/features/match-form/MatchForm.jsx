@@ -11,6 +11,8 @@ import {
   VStack,
   Box,
   Text,
+  Stack,
+  Image,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import BoxWithShadow from "../../components/BoxWithShadow.jsx";
@@ -26,7 +28,7 @@ const MyForm = () => {
       count: 3,
     },
   });
-  const [responseText, setResponseText] = useState("");
+  const [response, setResponse] = useState("");
 
   const onSubmit = async (values) => {
     try {
@@ -38,10 +40,10 @@ const MyForm = () => {
         method: "POST",
         body: formData,
       });
-      const responseData = await response.text();
-      setResponseText(responseData);
+      const responseData = await response.json();
+      setResponse(responseData);
     } catch (error) {
-      setResponseText(error.message);
+      setResponse(error.message);
     }
   };
 
@@ -86,11 +88,23 @@ const MyForm = () => {
           Submit
         </Button>
 
-        {responseText && (
+        {response?.memes ? (
           <Box mt={4}>
-            <Text>Response:</Text>
-            <Text>{responseText}</Text>
+            <Stack direction="row">
+              {response.memes.map((id) => {
+                return (
+                  <Image
+                    key={id}
+                    boxSize="150px"
+                    src={`localhost:5000/memes/${id}`}
+                    alt="Dan Abramov"
+                  />
+                );
+              })}
+            </Stack>
           </Box>
+        ) : (
+          <Text>{response}</Text>
         )}
       </VStack>
     </BoxWithShadow>
