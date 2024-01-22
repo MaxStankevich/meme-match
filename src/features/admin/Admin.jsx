@@ -7,60 +7,52 @@ import {
   Th,
   Td,
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
   useDisclosure,
   Flex,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverHeader,
+  PopoverBody,
+  PopoverFooter,
+  ButtonGroup,
 } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-import BoxWithShadow from "../../components/BoxWithShadow.jsx";
+
+import BoxWithShadow from "src/components/BoxWithShadow.jsx";
+import Modal from "./Modal.jsx";
 
 const MyTableComponent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { register, handleSubmit, reset, setValue } = useForm();
   const [data, setData] = useState([
     { name: "Name1", imageUrl: "url1", labels: "a,b,c" },
     { name: "Name2", imageUrl: "url2", labels: "d,e,f" },
   ]);
   const [currentItem, setCurrentItem] = useState(null);
 
-  const onSubmit = (data) => {
-    if (currentItem) {
+  const handleModalSave = (formData, item) => {
+    if (item) {
       setData((currentData) =>
-        currentData.map((item) =>
-          item.name === currentItem ? { ...item, ...data } : item,
+        currentData.map((dataItem) =>
+          dataItem.name === item.name ? { ...dataItem, ...formData } : dataItem,
         ),
       );
     } else {
       setData((currentData) => [
         ...currentData,
-        { ...data, imageUrl: "newUrl" },
+        { ...formData, imageUrl: "newUrl" },
       ]);
     }
-    onClose();
   };
 
   const handleEdit = (itemName) => {
     const item = data.find((i) => i.name === itemName);
-    if (item) {
-      setValue("name", item.name);
-      setValue("labels", item.labels);
-      setCurrentItem(itemName);
-      onOpen();
-    }
+    setCurrentItem(item);
+    onOpen();
   };
 
   const handleAdd = () => {
-    reset();
     setCurrentItem(null);
     onOpen();
   };
@@ -103,15 +95,36 @@ const MyTableComponent = () => {
                   >
                     <FiEdit />
                   </Button>
-                  <Button
-                    colorScheme="red"
-                    variant="outline"
-                    size="sm"
-                    ml={2}
-                    onClick={() => handleDelete(item.name)}
-                  >
-                    <FiTrash2 />
-                  </Button>
+                  <Popover>
+                    <PopoverTrigger>
+                      <Button
+                        colorScheme="red"
+                        variant="outline"
+                        size="sm"
+                        ml={2}
+                      >
+                        <FiTrash2 />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverHeader>Confirmation</PopoverHeader>
+                      <PopoverBody>
+                        Are you sure you want to delete this item?
+                      </PopoverBody>
+                      <PopoverFooter display="flex" justifyContent="flex-end">
+                        <ButtonGroup size="sm">
+                          <Button
+                            variant="outline"
+                            colorScheme="red"
+                            onClick={() => handleDelete(item.name)}
+                          >
+                            Yes
+                          </Button>
+                        </ButtonGroup>
+                      </PopoverFooter>
+                    </PopoverContent>
+                  </Popover>
                 </Td>
               </Tr>
             ))}
@@ -119,38 +132,12 @@ const MyTableComponent = () => {
         </Table>
       </BoxWithShadow>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <ModalHeader>{currentItem ? "Edit Meme" : "New Meme"}</ModalHeader>
-            <ModalBody>
-              <FormControl isRequired>
-                <FormLabel>Name</FormLabel>
-                <Input {...register("name", { required: true })} />
-              </FormControl>
-              <FormControl isRequired mt={4}>
-                <FormLabel>Labels</FormLabel>
-                <Textarea {...register("labels", { required: true })} />
-              </FormControl>
-            </ModalBody>
-            <ModalFooter>
-              <Button mr={3} type="submit">
-                Save
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  reset();
-                  onClose();
-                }}
-              >
-                Cancel
-              </Button>
-            </ModalFooter>
-          </form>
-        </ModalContent>
-      </Modal>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSave={handleModalSave}
+        currentItem={currentItem}
+      />
     </>
   );
 };
