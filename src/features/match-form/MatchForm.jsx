@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   FormControl,
@@ -19,26 +19,46 @@ import {
 import { useForm } from "react-hook-form";
 import BoxWithShadow from "../../components/BoxWithShadow.jsx";
 
-const defaultUrl = import.meta.env.PROD
-  ? "http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match"
-  : "http://localhost:5000/api/memes/match";
+const predefinedUrls = [
+  "http://localhost:5000/api/memes/match",
+  "http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match",
+];
+
+const defaultUrl = import.meta.env.PROD ? predefinedUrls[1] : predefinedUrls[0];
 
 const MyForm = () => {
   const {
     handleSubmit,
     register,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      apiUrl: defaultUrl,
+      apiUrl: localStorage.getItem("apiUrl") || defaultUrl,
       count: 3,
     },
   });
   const [response, setResponse] = useState("");
   const [isCustomUrl, setIsCustomUrl] = useState(false);
 
+  const apiUrl = watch("apiUrl");
+
+  useEffect(() => {
+    const storedApiUrl = localStorage.getItem("apiUrl");
+    if (storedApiUrl) {
+      setValue("apiUrl", storedApiUrl);
+      setIsCustomUrl(!predefinedUrls.includes(storedApiUrl));
+    }
+  }, [setValue, predefinedUrls]);
+
   const handleApiUrlChange = (event) => {
-    setIsCustomUrl(event.target.value === "custom");
+    const selectedApiUrl = event.target.value;
+    setIsCustomUrl(
+      selectedApiUrl === "custom" || !predefinedUrls.includes(selectedApiUrl),
+    );
+    localStorage.setItem("apiUrl", selectedApiUrl);
+    setValue("apiUrl", selectedApiUrl);
   };
 
   const onSubmit = async ({ text, count, apiUrl }) => {
@@ -55,6 +75,9 @@ const MyForm = () => {
       });
       const responseData = await response.json();
       setResponse(responseData);
+      if (isCustomUrl) {
+        localStorage.setItem("apiUrl", apiUrl);
+      }
     } catch (error) {
       setResponse(error.message);
     }
@@ -134,7 +157,7 @@ const MyForm = () => {
                   <Image
                     key={id}
                     boxSize="150px"
-                    src={`http://localhost:5000/api/memes/${id}`}
+                    src={`${new URL(apiUrl).origin}/api/memes/${id}`}
                     alt={id}
                   />
                 </WrapItem>
