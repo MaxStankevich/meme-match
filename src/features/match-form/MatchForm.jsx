@@ -14,6 +14,7 @@ import {
   Image,
   Wrap,
   WrapItem,
+  Select,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import BoxWithShadow from "../../components/BoxWithShadow.jsx";
@@ -25,21 +26,29 @@ const MyForm = () => {
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      apiUrl: "http://localhost:5000/match",
+      apiUrl:
+        "http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match",
       count: 3,
     },
   });
   const [response, setResponse] = useState("");
+  const [isCustomUrl, setIsCustomUrl] = useState(false);
 
-  const onSubmit = async (values) => {
+  const handleApiUrlChange = (event) => {
+    setIsCustomUrl(event.target.value === "custom");
+  };
+
+  const onSubmit = async ({ text, count, apiUrl }) => {
     try {
-      const formData = new FormData();
-      formData.append("text", values.text);
-      formData.append("count", values.count);
-
-      const response = await fetch(values.apiUrl, {
+      const response = await fetch(apiUrl, {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+          count,
+        }),
       });
       const responseData = await response.json();
       setResponse(responseData);
@@ -53,14 +62,39 @@ const MyForm = () => {
       <VStack as="form" onSubmit={handleSubmit(onSubmit)} spacing={4}>
         <FormControl isInvalid={errors.apiUrl}>
           <FormLabel htmlFor="apiUrl">API Url</FormLabel>
-          <Input
+          <Select
             id="apiUrl"
             {...register("apiUrl", { required: "API Url is required" })}
-          />
+            onChange={handleApiUrlChange}
+            defaultValue="http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match"
+          >
+            <option value="http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match">
+              http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match
+            </option>
+            <option value="http://localhost:5000/match">
+              http://localhost:5000/match
+            </option>
+            <option value="custom">Custom URL</option>
+          </Select>
           <FormErrorMessage>
             {errors.apiUrl && errors.apiUrl.message}
           </FormErrorMessage>
         </FormControl>
+
+        {isCustomUrl && (
+          <FormControl isInvalid={errors.apiUrl}>
+            <FormLabel htmlFor="customApiUrl">Custom API Url</FormLabel>
+            <Input
+              id="customApiUrl"
+              {...register("apiUrl", {
+                required: "Custom API Url is required",
+              })}
+            />
+            <FormErrorMessage>
+              {errors.apiUrl && errors.apiUrl.message}
+            </FormErrorMessage>
+          </FormControl>
+        )}
 
         <FormControl isInvalid={errors.text}>
           <FormLabel htmlFor="text">Text</FormLabel>
