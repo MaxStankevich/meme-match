@@ -19,6 +19,10 @@ import {
 import { useForm } from "react-hook-form";
 import BoxWithShadow from "../../components/BoxWithShadow.jsx";
 
+const defaultUrl = import.meta.env.PROD
+  ? "http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match"
+  : "http://localhost:5000/api/memes/match";
+
 const MyForm = () => {
   const {
     handleSubmit,
@@ -26,8 +30,7 @@ const MyForm = () => {
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      apiUrl:
-        "http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match",
+      apiUrl: defaultUrl,
       count: 3,
     },
   });
@@ -66,13 +69,13 @@ const MyForm = () => {
             id="apiUrl"
             {...register("apiUrl", { required: "API Url is required" })}
             onChange={handleApiUrlChange}
-            defaultValue="http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match"
+            defaultValue={defaultUrl}
           >
+            <option value="http://localhost:5000/api/memes/match">
+              http://localhost:5000/api/memes/match
+            </option>
             <option value="http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match">
               http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes/match
-            </option>
-            <option value="http://localhost:5000/match">
-              http://localhost:5000/match
             </option>
             <option value="custom">Custom URL</option>
           </Select>
@@ -131,7 +134,7 @@ const MyForm = () => {
                   <Image
                     key={id}
                     boxSize="150px"
-                    src={`http://localhost:5000/memes/${id}`}
+                    src={`http://localhost:5000/api/memes/${id}`}
                     alt={id}
                   />
                 </WrapItem>
