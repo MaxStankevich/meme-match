@@ -157,7 +157,7 @@ const MyForm = () => {
                   <Image
                     key={id}
                     boxSize="150px"
-                    src={`${new URL(apiUrl).origin}/api/memes/${id}`}
+                    src={`${new URL(apiUrl === "custom" ? predefinedUrls[0] : apiUrl).origin}/api/memes/${id}`}
                     alt={id}
                   />
                 </WrapItem>
