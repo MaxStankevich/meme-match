@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -11,20 +11,30 @@ import {
   Input,
   Textarea,
   Button,
+  Image,
+  Box,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 const MemeModal = ({ isOpen, onClose, onSave, currentItem }) => {
-  const { register, handleSubmit, reset, setValue } = useForm();
+  const { register, handleSubmit, reset, setValue, watch } = useForm();
+  const [imageUrlPreview, setImageUrlPreview] = useState("");
+  const imageUrl = watch("imageUrl");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (currentItem) {
       setValue("name", currentItem.name);
       setValue("labels", currentItem.labels);
+      setValue("imageUrl", currentItem.imageUrl);
+      setImageUrlPreview(currentItem.imageUrl);
     } else {
       reset();
     }
   }, [currentItem, setValue, reset]);
+
+  useEffect(() => {
+    setImageUrlPreview(imageUrl);
+  }, [imageUrl]);
 
   const onSubmit = (data) => {
     onSave(data, currentItem);
@@ -45,6 +55,20 @@ const MemeModal = ({ isOpen, onClose, onSave, currentItem }) => {
             <FormControl isRequired mt={4}>
               <FormLabel>Labels</FormLabel>
               <Textarea {...register("labels", { required: true })} />
+            </FormControl>
+            <FormControl mt={4}>
+              <FormLabel>Image URL</FormLabel>
+              <Input {...register("imageUrl")} />
+              {imageUrlPreview && (
+                <Box mt={4}>
+                  <Image
+                    src={imageUrlPreview}
+                    alt="Meme preview"
+                    maxH="200px"
+                    objectFit="contain"
+                  />
+                </Box>
+              )}
             </FormControl>
           </ModalBody>
           <ModalFooter>

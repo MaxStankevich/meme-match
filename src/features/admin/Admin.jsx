@@ -17,17 +17,29 @@ import {
   PopoverBody,
   PopoverFooter,
   ButtonGroup,
+  Box,
+  Image,
 } from "@chakra-ui/react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 import BoxWithShadow from "src/components/BoxWithShadow.jsx";
 import Modal from "./Modal.jsx";
 
-const MyTableComponent = () => {
+const Admin = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [data, setData] = useState([
-    { name: "Name1", imageUrl: "url1", labels: "a,b,c" },
-    { name: "Name2", imageUrl: "url2", labels: "d,e,f" },
+    {
+      name: "pepe",
+      imageUrl:
+        "https://ichef.bbci.co.uk/news/976/cpsprodpb/16620/production/_91408619_55df76d5-2245-41c1-8031-07a4da3f313f.jpg",
+      labels: "frog, pepe",
+    },
+    {
+      name: "doge",
+      imageUrl:
+        "https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/Original_Doge_meme.jpg/220px-Original_Doge_meme.jpg",
+      labels: "dog, doge, pet",
+    },
   ]);
   const [currentItem, setCurrentItem] = useState(null);
 
@@ -39,10 +51,7 @@ const MyTableComponent = () => {
         ),
       );
     } else {
-      setData((currentData) => [
-        ...currentData,
-        { ...formData, imageUrl: "newUrl" },
-      ]);
+      setData((currentData) => [...currentData, { ...formData }]);
     }
   };
 
@@ -75,7 +84,7 @@ const MyTableComponent = () => {
           <Thead>
             <Tr>
               <Th>Name</Th>
-              <Th>Image URL</Th>
+              <Th>Image</Th>
               <Th>Labels</Th>
               <Th>Actions</Th>
             </Tr>
@@ -84,7 +93,16 @@ const MyTableComponent = () => {
             {data.map((item) => (
               <Tr key={item.name}>
                 <Td>{item.name}</Td>
-                <Td>{item.imageUrl}</Td>
+                <Td>
+                  <Box width="50px" height="50px" overflow="hidden">
+                    <Image
+                      src={item.imageUrl}
+                      alt={`${item.name}`}
+                      objectFit="cover"
+                      boxSize="100%"
+                    />
+                  </Box>
+                </Td>
                 <Td>{item.labels}</Td>
                 <Td>
                   <Button
@@ -142,4 +160,4 @@ const MyTableComponent = () => {
   );
 };
 
-export default MyTableComponent;
+export default Admin;
