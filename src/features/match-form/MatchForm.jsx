@@ -17,6 +17,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 import BoxWithShadow from "../../components/BoxWithShadow.jsx";
 
 const predefinedUrls = [
@@ -63,18 +64,11 @@ const MyForm = () => {
 
   const onSubmit = async ({ text, count, apiUrl }) => {
     try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text,
-          count,
-        }),
+      const responseData = await axios.post(apiUrl, {
+        text,
+        count,
       });
-      const responseData = await response.json();
-      setResponse(responseData);
+      setResponse(responseData.data);
       if (isCustomUrl) {
         localStorage.setItem("apiUrl", apiUrl);
       }
@@ -157,7 +151,7 @@ const MyForm = () => {
                   <Image
                     key={id}
                     boxSize="150px"
-                    src={`${new URL(apiUrl === "custom" ? predefinedUrls[0] : apiUrl).origin}/api/memes/${id}`}
+                    src={`${new URL(apiUrl === "custom" ? predefinedUrls[0] : apiUrl).origin}/api/memes/${id}/sources/${id}/image`}
                     alt={id}
                   />
                 </WrapItem>

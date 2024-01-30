@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   Thead,
@@ -21,27 +21,35 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
+import axios from "axios";
 
 import BoxWithShadow from "src/components/BoxWithShadow.jsx";
 import Modal from "./Modal.jsx";
 
+const url =
+  "http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes";
+
 const Admin = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [data, setData] = useState([
-    {
-      name: "pepe",
-      imageUrl:
-        "https://ichef.bbci.co.uk/news/976/cpsprodpb/16620/production/_91408619_55df76d5-2245-41c1-8031-07a4da3f313f.jpg",
-      labels: "frog, pepe",
-    },
-    {
-      name: "doge",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/Original_Doge_meme.jpg/220px-Original_Doge_meme.jpg",
-      labels: "dog, doge, pet",
-    },
-  ]);
+  const [data, setData] = useState([]);
   const [currentItem, setCurrentItem] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get(url)
+      .then((response) => {
+        const memes = response.data.items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          imageUrl: `${url}/${item.id}/sources/${item.id}/image`,
+          labels: item.labels.join(", "),
+        }));
+        setData(memes);
+      })
+      .catch((error) => {
+        console.error("Error fetching memes:", error);
+      });
+  }, []);
 
   const handleModalSave = (formData, item) => {
     if (item) {
@@ -55,8 +63,8 @@ const Admin = () => {
     }
   };
 
-  const handleEdit = (itemName) => {
-    const item = data.find((i) => i.name === itemName);
+  const handleEdit = (id) => {
+    const item = data.find((i) => i.id === id);
     setCurrentItem(item);
     onOpen();
   };
@@ -66,10 +74,15 @@ const Admin = () => {
     onOpen();
   };
 
-  const handleDelete = (itemName) => {
-    setData((currentData) =>
-      currentData.filter((item) => item.name !== itemName),
-    );
+  const handleDelete = (id) => {
+    axios
+      .delete(`${url}/${id}`)
+      .then(() => {
+        setData((currentData) => currentData.filter((item) => item.id !== id));
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -91,7 +104,7 @@ const Admin = () => {
           </Thead>
           <Tbody>
             {data.map((item) => (
-              <Tr key={item.name}>
+              <Tr key={item.id}>
                 <Td>{item.name}</Td>
                 <Td>
                   <Box width="50px" height="50px" overflow="hidden">
@@ -105,44 +118,46 @@ const Admin = () => {
                 </Td>
                 <Td>{item.labels}</Td>
                 <Td>
-                  <Button
-                    colorScheme="blue"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(item.name)}
-                  >
-                    <FiEdit />
-                  </Button>
-                  <Popover>
-                    <PopoverTrigger>
-                      <Button
-                        colorScheme="red"
-                        variant="outline"
-                        size="sm"
-                        ml={2}
-                      >
-                        <FiTrash2 />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <PopoverArrow />
-                      <PopoverHeader>Confirmation</PopoverHeader>
-                      <PopoverBody>
-                        Are you sure you want to delete this item?
-                      </PopoverBody>
-                      <PopoverFooter display="flex" justifyContent="flex-end">
-                        <ButtonGroup size="sm">
-                          <Button
-                            variant="outline"
-                            colorScheme="red"
-                            onClick={() => handleDelete(item.name)}
-                          >
-                            Yes
-                          </Button>
-                        </ButtonGroup>
-                      </PopoverFooter>
-                    </PopoverContent>
-                  </Popover>
+                  <Flex>
+                    <Button
+                      colorScheme="blue"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(item.id)}
+                    >
+                      <FiEdit />
+                    </Button>
+                    <Popover>
+                      <PopoverTrigger>
+                        <Button
+                          colorScheme="red"
+                          variant="outline"
+                          size="sm"
+                          ml={2}
+                        >
+                          <FiTrash2 />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverHeader>Confirmation</PopoverHeader>
+                        <PopoverBody>
+                          Are you sure you want to delete this item?
+                        </PopoverBody>
+                        <PopoverFooter display="flex" justifyContent="flex-end">
+                          <ButtonGroup size="sm">
+                            <Button
+                              variant="outline"
+                              colorScheme="red"
+                              onClick={() => handleDelete(item.id)}
+                            >
+                              Yes
+                            </Button>
+                          </ButtonGroup>
+                        </PopoverFooter>
+                      </PopoverContent>
+                    </Popover>
+                  </Flex>
                 </Td>
               </Tr>
             ))}
