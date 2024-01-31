@@ -11,7 +11,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
-import { FaTools, FaSignOutAlt } from "react-icons/fa";
+import { FaTools, FaSignOutAlt, FaCog } from "react-icons/fa";
 import useAuth from "src/hooks/useAuth.js";
 import faceImage from "src/assets/face.png";
 
@@ -46,14 +46,24 @@ const Header = () => {
             </MenuButton>
             <MenuList color="black">
               {user.role === "admin" && (
-                <MenuItem
-                  icon={<FaTools />}
-                  onClick={() => {
-                    navigate("/admin");
-                  }}
-                >
-                  Administration
-                </MenuItem>
+                <>
+                  <MenuItem
+                    icon={<FaCog />}
+                    onClick={() => {
+                      navigate("/settings");
+                    }}
+                  >
+                    Settings
+                  </MenuItem>
+                  <MenuItem
+                    icon={<FaTools />}
+                    onClick={() => {
+                      navigate("/admin");
+                    }}
+                  >
+                    Administration
+                  </MenuItem>
+                </>
               )}
               <MenuItem icon={<FaSignOutAlt />} onClick={logOut}>
                 Log Out

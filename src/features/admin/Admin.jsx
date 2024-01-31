@@ -21,13 +21,10 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-import axios from "axios";
+import axios, { getBaseUrl } from "src/axios";
 
 import BoxWithShadow from "src/components/BoxWithShadow.jsx";
 import Modal from "./Modal.jsx";
-
-const url =
-  "http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes";
 
 const Admin = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -36,12 +33,12 @@ const Admin = () => {
 
   useEffect(() => {
     axios
-      .get(url)
+      .get("/memes")
       .then((response) => {
         const memes = response.data.items.map((item) => ({
           id: item.id,
           name: item.name,
-          imageUrl: `${url}/${item.id}/sources/${item.id}/image`,
+          imageUrl: `${getBaseUrl()}/memes/${item.id}/sources/${item.id}/image`,
           labels: item.labels.join(", "),
         }));
         setData(memes);
@@ -76,7 +73,7 @@ const Admin = () => {
 
   const handleDelete = (id) => {
     axios
-      .delete(`${url}/${id}`)
+      .delete(`/memes/${id}`)
       .then(() => {
         setData((currentData) => currentData.filter((item) => item.id !== id));
       })

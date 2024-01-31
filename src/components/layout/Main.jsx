@@ -4,7 +4,8 @@ import Login from "/src/features/login/Login.jsx";
 import useAuth from "/src/hooks/useAuth.js";
 import Background from "./Background/index.jsx";
 import { Routes, Route } from "react-router-dom";
-import Admin from "../../features/admin/Admin.jsx";
+import Admin from "src/features/admin/Admin.jsx";
+import Settings from "src/features/settings/Settings.jsx";
 
 const Main = () => {
   const { user, isLoading } = useAuth();
@@ -35,7 +36,10 @@ const Main = () => {
                   <Routes>
                     <Route path="/" element={<MatchForm />} />
                     {user.role === "admin" && (
-                      <Route path="/admin" element={<Admin />} />
+                      <>
+                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/settings" element={<Settings />} />
+                      </>
                     )}
                   </Routes>
                 ) : (

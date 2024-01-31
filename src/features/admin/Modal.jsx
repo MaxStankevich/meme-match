@@ -15,7 +15,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios from "src/axios";
 
 const MemeModal = ({ isOpen, onClose, onSave, currentItem }) => {
   const { register, handleSubmit, reset, setValue, watch } = useForm();
@@ -40,12 +40,10 @@ const MemeModal = ({ isOpen, onClose, onSave, currentItem }) => {
 
   const onSubmit = async (memeData) => {
     setIsSubmitting(true);
-    const url =
-      "http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api/memes";
 
     if (currentItem) {
       try {
-        const response = await axios.put(`${url}/${currentItem.id}`, {
+        const response = await axios.put(`/memes/${currentItem.id}`, {
           ...memeData,
           id: currentItem.id,
           labels: memeData.labels.split(",").map((item) => item.trim()),
@@ -56,7 +54,7 @@ const MemeModal = ({ isOpen, onClose, onSave, currentItem }) => {
       }
     } else {
       try {
-        const response = await axios.post(url, {
+        const response = await axios.post("/memes", {
           ...memeData,
           labels: memeData.labels.split(","),
         });
