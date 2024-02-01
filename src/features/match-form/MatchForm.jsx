@@ -17,6 +17,7 @@ import {
 import { useForm } from "react-hook-form";
 import axios, { getBaseUrl } from "src/axios";
 import BoxWithShadow from "../../components/BoxWithShadow.jsx";
+import { getMemeImageUrl } from "../../utils/index.js";
 
 const MyForm = () => {
   const {
@@ -80,7 +81,7 @@ const MyForm = () => {
                   <Image
                     key={id}
                     boxSize="150px"
-                    src={`${getBaseUrl()}/memes/${id}/sources/${id}/image`}
+                    src={getMemeImageUrl({ id })}
                     alt={id}
                   />
                 </WrapItem>

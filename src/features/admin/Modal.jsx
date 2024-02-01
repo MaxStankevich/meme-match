@@ -27,8 +27,8 @@ const MemeModal = ({ isOpen, onClose, onSave, currentItem }) => {
   useEffect(() => {
     if (currentItem) {
       setValue("name", currentItem.name);
-      setValue("labels", currentItem.labels);
-      setImagePreview(currentItem.imageUrl);
+      setValue("labels", currentItem.labels.join(", "));
+      setImagePreview(getMemeImageUrl(currentItem));
     } else {
       reset();
       setImagePreview("");
@@ -73,8 +73,11 @@ const MemeModal = ({ isOpen, onClose, onSave, currentItem }) => {
       if (memeData.image[0] && response.data.id) {
         const formData = new FormData();
         formData.append("image", memeData.image[0]);
+
         const newImage = await axios[currentItem ? "put" : "post"](
-          `/memes/${response.data.id}/sources/image?type=S3`,
+          currentItem && currentItem.sources?.length
+            ? `/memes/${response.data.id}/sources/${currentItem.sources[0]?.id}/image?type=S3`
+            : `/memes/${response.data.id}/sources/image?type=S3`,
           formData,
           {
             headers: {
@@ -82,17 +85,15 @@ const MemeModal = ({ isOpen, onClose, onSave, currentItem }) => {
             },
           },
         );
+
         imageData = {
-          imageUrl: getMemeImageUrl({
-            id: response.data.id,
-            sources: [newImage.data],
-          }),
+          sources: [newImage.data],
+          imageUpdated: true,
         };
       }
 
       onSave({
         ...response.data,
-        labels: response.data.labels.join(", "),
         ...imageData,
       });
     } catch (error) {
