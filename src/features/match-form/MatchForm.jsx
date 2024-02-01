@@ -76,13 +76,13 @@ const MyForm = () => {
         {response?.memes ? (
           <Box mt={4}>
             <Wrap spacing="20px">
-              {response?.memes?.map((id) => (
-                <WrapItem key={id}>
+              {response?.memes?.map((meme) => (
+                <WrapItem key={meme.id}>
                   <Image
-                    key={id}
+                    key={meme.id}
                     boxSize="150px"
-                    src={getMemeImageUrl({ id })}
-                    alt={id}
+                    src={getMemeImageUrl(meme)}
+                    alt={meme.id}
                   />
                 </WrapItem>
               ))}
