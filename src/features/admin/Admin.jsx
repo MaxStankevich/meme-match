@@ -21,10 +21,11 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
-import axios, { getBaseUrl } from "src/axios";
+import axios from "src/axios";
 
 import BoxWithShadow from "src/components/BoxWithShadow.jsx";
 import Modal from "./Modal.jsx";
+import { getMemeImageUrl } from "src/utils";
 
 const Admin = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,7 +39,7 @@ const Admin = () => {
         const memes = response.data.items.map((item) => ({
           id: item.id,
           name: item.name,
-          imageUrl: `${getBaseUrl()}/memes/${item.id}/sources/${item.id}/image`,
+          imageUrl: getMemeImageUrl(item),
           labels: item.labels.join(", "),
         }));
         setData(memes);
@@ -48,15 +49,15 @@ const Admin = () => {
       });
   }, []);
 
-  const handleModalSave = (formData, item) => {
-    if (item) {
+  const handleModalSave = (item) => {
+    if (currentItem) {
       setData((currentData) =>
         currentData.map((dataItem) =>
-          dataItem.name === item.name ? { ...dataItem, ...formData } : dataItem,
+          dataItem.id === item.id ? { ...dataItem, ...item } : dataItem,
         ),
       );
     } else {
-      setData((currentData) => [...currentData, { ...formData }]);
+      setData((currentData) => [...currentData, item]);
     }
   };
 
@@ -164,7 +165,10 @@ const Admin = () => {
 
       <Modal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={() => {
+          setCurrentItem(null);
+          onClose();
+        }}
         onSave={handleModalSave}
         currentItem={currentItem}
       />
