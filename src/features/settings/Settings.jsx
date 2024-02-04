@@ -16,23 +16,21 @@ const predefinedUrls = [
 ];
 
 const Settings = () => {
-  const [selectedUrl, setSelectedUrl] = useState(
-    localStorage.getItem("apiUrl") || predefinedUrls[0],
-  );
+  const getInitialUrl = () =>
+    localStorage.getItem("apiUrl") || predefinedUrls[0];
+  const [selectedUrl, setSelectedUrl] = useState(getInitialUrl);
   const [isCustomUrl, setIsCustomUrl] = useState(
-    !predefinedUrls.includes(localStorage.getItem("apiUrl")),
+    !predefinedUrls.includes(getInitialUrl()),
   );
 
   useEffect(() => {
-    if (!predefinedUrls.includes(selectedUrl)) {
-      setIsCustomUrl(true);
-    }
+    updateBaseUrl(selectedUrl);
   }, [selectedUrl]);
 
   const handleChange = (event) => {
     const url = event.target.value;
     setSelectedUrl(url);
-    setIsCustomUrl(url === "custom");
+    setIsCustomUrl(!predefinedUrls.includes(url));
   };
 
   const handleSave = () => {
@@ -45,7 +43,11 @@ const Settings = () => {
       <VStack spacing={4}>
         <FormControl>
           <FormLabel htmlFor="apiUrl">API Url</FormLabel>
-          <Select id="apiUrl" value={selectedUrl} onChange={handleChange}>
+          <Select
+            id="apiUrl"
+            value={isCustomUrl ? "custom" : selectedUrl}
+            onChange={handleChange}
+          >
             {predefinedUrls.map((url) => (
               <option key={url} value={url}>
                 {url}
@@ -60,7 +62,7 @@ const Settings = () => {
             <FormLabel htmlFor="customApiUrl">Custom API Url</FormLabel>
             <Input
               id="customApiUrl"
-              value={selectedUrl === "custom" ? "" : selectedUrl}
+              value={isCustomUrl ? selectedUrl : ""}
               onChange={(e) => setSelectedUrl(e.target.value)}
             />
           </FormControl>
