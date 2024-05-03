@@ -34,11 +34,12 @@ const MyForm = () => {
   const [response, setResponse] = useState("");
   const [models, setModels] = useState([]);
   const [selectedModel, setSelectedModel] = useState([]);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState('L2');
   const [splitBySentences, setSplitBySentences] = useState(true)
 
   const onSubmit = async ({ text, count }) => {
     try {
-      const responseData = await axios.post(`/memes/match?modelId=${selectedModel}&split=${splitBySentences}`, {
+      const responseData = await axios.post(`/memes/match?modelId=${selectedModel}&split=${splitBySentences}&algorithm=${selectedAlgorithm}`, {
         text,
         count,
       });
@@ -51,6 +52,11 @@ const MyForm = () => {
   const handleModelChange = (event) => {
     const modelId = event.target.value;
     setSelectedModel(modelId);
+  };
+
+  const handleAlgorithmChange = (event) => {
+    const algorithm = event.target.value;
+    setSelectedAlgorithm(algorithm);
   };
 
   const handleCheckboxChange = (event) => {
@@ -104,6 +110,19 @@ const MyForm = () => {
         </FormControl>
 
         <FormControl>
+          <FormLabel htmlFor="algo">Select matching algorithm</FormLabel>
+          <Select
+              id="algoSelect"
+              placeholder="Select algorithm"
+              onChange={handleAlgorithmChange}
+          >
+            <option key="L2" value="L2">L2</option>
+            <option key="cosine" value="COSINE">Cosine</option>
+            )
+          </Select>
+        </FormControl>
+
+        <FormControl>
           <Checkbox
               defaultChecked
               onChange={handleCheckboxChange}
@@ -128,15 +147,16 @@ const MyForm = () => {
                           <Text>{sentence.sentence}</Text>
                         </Box>
                         <br/>
-                        {sentence?.memes?.map((meme) => (
+                        {sentence?.matches?.map((match) => (
                             <Box mt={4}>
                               <Wrap spacing="20px">
                                 <Image
-                                    key={meme.id}
+                                    key={match.meme.id}
                                     boxSize="150px"
-                                    src={getMemeImageUrl(meme)}
-                                    alt={meme.id}
+                                    src={getMemeImageUrl(match.meme)}
+                                    alt={match.meme.id}
                                 />
+                                <Box>{match.score}/5</Box>
                               </Wrap>
                             </Box>
                         ))}
