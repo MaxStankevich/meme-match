@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   FormControl,
@@ -14,65 +14,79 @@ import {
   Wrap,
   SimpleGrid,
   Select,
-  Checkbox
+  Checkbox,
 } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
-import axios, { getBaseUrl } from "src/axios";
+import { useForm, Controller } from "react-hook-form";
+import axios from "src/axios";
 import BoxWithShadow from "../../components/BoxWithShadow.jsx";
 import { getMemeImageUrl } from "../../utils/index.js";
 
-const MyForm = () => {
+const MatchForm = () => {
+  const storedValues = JSON.parse(localStorage.getItem("formValues") || "{}");
   const {
     handleSubmit,
     register,
+    control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      count: 3,
+      text: "",
+      count: storedValues.count || 3,
+      modelId: storedValues.modelId || "",
+      algorithm: storedValues.algorithm || "L2",
+      splitBySentences:
+        storedValues.splitBySentences !== undefined
+          ? storedValues.splitBySentences
+          : true,
     },
   });
+
   const [response, setResponse] = useState("");
   const [models, setModels] = useState([]);
-  const [selectedModel, setSelectedModel] = useState([]);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState('L2');
-  const [splitBySentences, setSplitBySentences] = useState(true)
 
-  const onSubmit = async ({ text, count }) => {
+  const onSubmit = async ({
+    text,
+    count,
+    modelId,
+    algorithm,
+    splitBySentences,
+  }) => {
     try {
-      const responseData = await axios.post(`/memes/match?modelId=${selectedModel}&split=${splitBySentences}&algorithm=${selectedAlgorithm}`, {
-        text,
-        count,
-      });
+      localStorage.setItem(
+        "formValues",
+        JSON.stringify({ count, modelId, algorithm, splitBySentences }),
+      );
+
+      const responseData = await axios.post(
+        `/memes/match?modelId=${modelId}&split=${splitBySentences}&algorithm=${algorithm}`,
+        {
+          text,
+          count,
+        },
+      );
       setResponse(responseData.data);
     } catch (error) {
       setResponse(error.message);
     }
   };
 
-  const handleModelChange = (event) => {
-    const modelId = event.target.value;
-    setSelectedModel(modelId);
-  };
-
-  const handleAlgorithmChange = (event) => {
-    const algorithm = event.target.value;
-    setSelectedAlgorithm(algorithm);
-  };
-
-  const handleCheckboxChange = (event) => {
-    const split = event.target.checked;
-    setSplitBySentences(split)
-  };
-
   useEffect(() => {
-    axios.get("/models")
-        .then((rs) => {
-          setModels(rs.data)
-        })
-        .catch((error) => {
-          console.error("Error fetching models:", error);
-        })
-  }, [])
+    axios
+      .get("/models")
+      .then((rs) => {
+        setModels(rs.data);
+        if (
+          !storedValues.modelId ||
+          !rs.data.some((m) => m.id == storedValues.modelId)
+        ) {
+          setValue("modelId", rs.data[0]?.id);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching models:", error);
+      });
+  }, []);
 
   return (
     <BoxWithShadow>
@@ -90,43 +104,57 @@ const MyForm = () => {
 
         <FormControl>
           <FormLabel htmlFor="count">Max Memes Count</FormLabel>
-          <NumberInput defaultValue={0}>
+          <NumberInput>
             <NumberInputField id="count" {...register("count")} />
           </NumberInput>
         </FormControl>
 
         <FormControl>
-          <FormLabel htmlFor="model">Select model</FormLabel>
-          <Select
-              id="modelSelect"
-              placeholder="Select model"
-              onChange={handleModelChange}
-          >
-            {models.map((model) => (
-              <option key={model.id} value={model.id}>{model.name}</option>
-              )
+          <FormLabel htmlFor="modelId">Select model</FormLabel>
+          <Controller
+            name="modelId"
+            control={control}
+            render={({ field }) => (
+              <Select id="modelSelect" placeholder="Select model" {...field}>
+                {models.map((model) => (
+                  <option key={model.id} value={model.id}>
+                    {model.name}
+                  </option>
+                ))}
+              </Select>
             )}
-          </Select>
+          />
         </FormControl>
 
         <FormControl>
           <FormLabel htmlFor="algo">Select matching algorithm</FormLabel>
-          <Select
-              id="algoSelect"
-              placeholder="Select algorithm"
-              onChange={handleAlgorithmChange}
-          >
-            <option key="L2" value="L2">L2</option>
-            <option key="cosine" value="COSINE">Cosine</option>
-            )
-          </Select>
+          <Controller
+            name="algorithm"
+            control={control}
+            render={({ field }) => (
+              <Select id="algoSelect" placeholder="Select algorithm" {...field}>
+                <option value="L2">L2</option>
+                <option value="COSINE">Cosine</option>
+              </Select>
+            )}
+          />
         </FormControl>
 
         <FormControl>
-          <Checkbox
-              defaultChecked
-              onChange={handleCheckboxChange}
-          >Match by sentences</Checkbox>
+          <Controller
+            name="splitBySentences"
+            control={control}
+            render={({ field: { onChange, onBlur, value, ref } }) => (
+              <Checkbox
+                ref={ref}
+                isChecked={value}
+                onChange={onChange}
+                onBlur={onBlur}
+              >
+                Match by sentences
+              </Checkbox>
+            )}
+          />
         </FormControl>
 
         <Button
@@ -139,31 +167,34 @@ const MyForm = () => {
         </Button>
 
         {response?.sentences ? (
-            <Box mt={4}>
-              <Wrap spacing="20px">
-                  {response?.sentences?.map((sentence) => (
-                      <SimpleGrid columns={2} spacingX='40px' spacingY='20px'>
-                        <Box mt={4}>
-                          <Text>{sentence.sentence}</Text>
-                        </Box>
-                        <br/>
-                        {sentence?.matches?.map((match) => (
-                            <Box mt={4}>
-                              <Wrap spacing="20px">
-                                <Image
-                                    key={match.meme.id}
-                                    boxSize="150px"
-                                    src={getMemeImageUrl(match.meme)}
-                                    alt={match.meme.id}
-                                />
-                                <Box>{match.score}/5</Box>
-                              </Wrap>
-                            </Box>
-                        ))}
-                      </SimpleGrid>
+          <Box mt={4}>
+            <Wrap spacing="20px">
+              {response.sentences.map((sentence, index) => (
+                <SimpleGrid
+                  key={index}
+                  columns={2}
+                  spacingX="40px"
+                  spacingY="20px"
+                >
+                  <Box mt={4}>
+                    <Text>{sentence.sentence}</Text>
+                  </Box>
+                  {sentence.matches.map((match) => (
+                    <Box key={match.meme.id} mt={4}>
+                      <Wrap spacing="20px">
+                        <Image
+                          boxSize="150px"
+                          src={getMemeImageUrl(match.meme)}
+                          alt={match.meme.id}
+                        />
+                        <Box>{match.score}/5</Box>
+                      </Wrap>
+                    </Box>
                   ))}
-              </Wrap>
-            </Box>
+                </SimpleGrid>
+              ))}
+            </Wrap>
+          </Box>
         ) : (
           <Text>{response}</Text>
         )}
@@ -172,4 +203,4 @@ const MyForm = () => {
   );
 };
 
-export default MyForm;
+export default MatchForm;
