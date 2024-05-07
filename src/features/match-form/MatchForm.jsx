@@ -8,18 +8,14 @@ import {
   NumberInputField,
   FormErrorMessage,
   VStack,
-  Box,
   Text,
-  Image,
-  Wrap,
-  SimpleGrid,
   Select,
   Checkbox,
 } from "@chakra-ui/react";
 import { useForm, Controller } from "react-hook-form";
 import axios from "src/axios";
 import BoxWithShadow from "../../components/BoxWithShadow.jsx";
-import { getMemeImageUrl } from "../../utils/index.js";
+import Sentences from "./sentences/Sentences.jsx";
 
 const MatchForm = () => {
   const storedValues = JSON.parse(localStorage.getItem("formValues") || "{}");
@@ -31,7 +27,7 @@ const MatchForm = () => {
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      text: "",
+      text: storedValues.text || "",
       count: storedValues.count || 3,
       modelId: storedValues.modelId || "",
       algorithm: storedValues.algorithm || "L2",
@@ -55,7 +51,7 @@ const MatchForm = () => {
     try {
       localStorage.setItem(
         "formValues",
-        JSON.stringify({ count, modelId, algorithm, splitBySentences }),
+        JSON.stringify({ text, count, modelId, algorithm, splitBySentences }),
       );
 
       const responseData = await axios.post(
@@ -165,40 +161,13 @@ const MatchForm = () => {
         >
           Submit
         </Button>
-
-        {response?.sentences ? (
-          <Box mt={4}>
-            <Wrap spacing="20px">
-              {response.sentences.map((sentence, index) => (
-                <SimpleGrid
-                  key={index}
-                  columns={2}
-                  spacingX="40px"
-                  spacingY="20px"
-                >
-                  <Box mt={4}>
-                    <Text>{sentence.sentence}</Text>
-                  </Box>
-                  {sentence.matches.map((match) => (
-                    <Box key={match.meme.id} mt={4}>
-                      <Wrap spacing="20px">
-                        <Image
-                          boxSize="150px"
-                          src={getMemeImageUrl(match.meme)}
-                          alt={match.meme.id}
-                        />
-                        <Box>{match.score}/5</Box>
-                      </Wrap>
-                    </Box>
-                  ))}
-                </SimpleGrid>
-              ))}
-            </Wrap>
-          </Box>
-        ) : (
-          <Text>{response}</Text>
-        )}
       </VStack>
+
+      {response?.sentences ? (
+        <Sentences sentences={response.sentences} />
+      ) : (
+        <Text>{response}</Text>
+      )}
     </BoxWithShadow>
   );
 };
