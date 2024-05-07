@@ -11,6 +11,8 @@ import {
   Text,
   Select,
   Checkbox,
+  Spinner,
+  useToast,
 } from "@chakra-ui/react";
 import { useForm, Controller } from "react-hook-form";
 import axios from "src/axios";
@@ -18,6 +20,7 @@ import BoxWithShadow from "../../components/BoxWithShadow.jsx";
 import Sentences from "./sentences/Sentences.jsx";
 
 const MatchForm = () => {
+  const toast = useToast();
   const storedValues = JSON.parse(localStorage.getItem("formValues") || "{}");
   const {
     handleSubmit,
@@ -29,7 +32,6 @@ const MatchForm = () => {
     defaultValues: {
       text: storedValues.text || "",
       count: storedValues.count || 3,
-      modelId: storedValues.modelId || "",
       algorithm: storedValues.algorithm || "L2",
       splitBySentences:
         storedValues.splitBySentences !== undefined
@@ -40,6 +42,7 @@ const MatchForm = () => {
 
   const [response, setResponse] = useState("");
   const [models, setModels] = useState([]);
+  const [isLoadingModels, setLoadingModels] = useState(false);
 
   const onSubmit = async ({
     text,
@@ -63,11 +66,17 @@ const MatchForm = () => {
       );
       setResponse(responseData.data);
     } catch (error) {
+      toast({
+        title: "Error matching memes",
+        description: error.message,
+        status: "error",
+      });
       setResponse(error.message);
     }
   };
 
   useEffect(() => {
+    setLoadingModels(true);
     axios
       .get("/models")
       .then((rs) => {
@@ -77,12 +86,21 @@ const MatchForm = () => {
           !rs.data.some((m) => m.id == storedValues.modelId)
         ) {
           setValue("modelId", rs.data[0]?.id);
+        } else {
+          setValue("modelId", storedValues.modelId);
         }
+        setLoadingModels(false);
       })
       .catch((error) => {
         console.error("Error fetching models:", error);
+        toast({
+          title: "Error fetching models",
+          description: error.message,
+          status: "error",
+        });
+        setLoadingModels(false);
       });
-  }, []);
+  }, [setValue, storedValues.modelId]);
 
   return (
     <BoxWithShadow>
@@ -105,13 +123,21 @@ const MatchForm = () => {
           </NumberInput>
         </FormControl>
 
-        <FormControl>
-          <FormLabel htmlFor="modelId">Select model</FormLabel>
+        <FormControl isInvalid={errors.modelId}>
+          <FormLabel htmlFor="modelId">
+            Select model {isLoadingModels && <Spinner size="xs" />}
+          </FormLabel>
           <Controller
             name="modelId"
             control={control}
+            rules={{ required: "Model selection is required" }}
             render={({ field }) => (
-              <Select id="modelSelect" placeholder="Select model" {...field}>
+              <Select
+                id="modelSelect"
+                placeholder="Select model"
+                isDisabled={!models.length || isLoadingModels}
+                {...field}
+              >
                 {models.map((model) => (
                   <option key={model.id} value={model.id}>
                     {model.name}
@@ -120,6 +146,9 @@ const MatchForm = () => {
               </Select>
             )}
           />
+          <FormErrorMessage>
+            {errors.modelId && errors.modelId.message}
+          </FormErrorMessage>
         </FormControl>
 
         <FormControl>

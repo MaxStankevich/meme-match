@@ -11,7 +11,16 @@ import { BASE_URL } from "./constants";
 const rootElement = document.getElementById("root");
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
+    <ChakraProvider
+      theme={theme}
+      toastOptions={{
+        defaultOptions: {
+          position: "top-right",
+          variant: "left-accent",
+          isClosable: true,
+        },
+      }}
+    >
       <BrowserRouter basename={BASE_URL}>
         <AuthProvider>
           <App />

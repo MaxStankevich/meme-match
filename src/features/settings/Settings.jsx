@@ -5,6 +5,7 @@ import {
   FormLabel,
   Input,
   Select,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { updateBaseUrl } from "src/axios";
@@ -15,13 +16,14 @@ const predefinedUrls = [
   "http://meme-match.eu-central-1.elasticbeanstalk.com:9090/api",
 ];
 
+const getInitialUrl = () => localStorage.getItem("apiUrl") || predefinedUrls[0];
+
 const Settings = () => {
-  const getInitialUrl = () =>
-    localStorage.getItem("apiUrl") || predefinedUrls[0];
   const [selectedUrl, setSelectedUrl] = useState(getInitialUrl);
   const [isCustomUrl, setIsCustomUrl] = useState(
     !predefinedUrls.includes(getInitialUrl()),
   );
+  const toast = useToast();
 
   useEffect(() => {
     updateBaseUrl(selectedUrl);
@@ -36,6 +38,7 @@ const Settings = () => {
   const handleSave = () => {
     localStorage.setItem("apiUrl", selectedUrl);
     updateBaseUrl(selectedUrl);
+    toast({ title: "Settings updated", status: "success" });
   };
 
   return (
